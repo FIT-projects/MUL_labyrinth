@@ -3,10 +3,8 @@ package game;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JPanel;
-
-import library.ImageLibrary;
+import library.*;
 
 /**
  * @author Jiri Konecny <xkonec28>
@@ -16,26 +14,30 @@ import library.ImageLibrary;
  */
 public class GamePanel extends JPanel{
 	private ImageLibrary iLib = null;
-	/**
-	 * Generated for serialization of the class
-	 */
-	private static final long serialVersionUID = -4270704324376844467L;
+	private MapLibrary mLib = null;
+	final private int resolution = 32;
+	final static private String imagesFile = "resources/terrain.png";
 
-	GamePanel(ImageLibrary iLib){
+	GamePanel(){
 		super();
-		this.iLib = iLib;
+		this.iLib = new ImageLibrary(imagesFile, resolution);
+		this.mLib = new MapLibrary(0);
+		
+		System.out.print(mLib.getTile(0));
 	}
 	
 	/**
 	 * Override method for painting the game
 	 */
 	public void paintComponent(Graphics g){
-		int width = getWidth();
-		int height = getHeight();
-		BufferedImage img = (BufferedImage)iLib.getImageTile(200);
+		super.paintComponent(g);
 		
-		g.drawOval(20, 20, 10, 10);
-		g.drawImage(img, 0, 0, this);
+		Graphics2D g2 = (Graphics2D)g;
+		
+		BufferedImage img = (BufferedImage)iLib.getImageTile(0);
+		
+		g2.drawImage(iLib.getImageTile(0), 0, 0, this);
+		g2.drawImage(iLib.getImageTile(1), 32, 0, this);
 		
 	}
 }
