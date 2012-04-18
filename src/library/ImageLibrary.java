@@ -2,6 +2,7 @@ package library;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -28,8 +29,8 @@ public class ImageLibrary {
 		
 		// load image from file
 		try {
-			img = ImageIO.read(new File(name));
-		} catch (IOException e) {
+			img = ImageIO.read(this.getClass().getResource(name));//ImageIO.read(new File(name));
+		} catch (Exception e) {
 			System.err.println("Error: Image file can't be loaded.");
 			e.printStackTrace();
 			System.exit(1);

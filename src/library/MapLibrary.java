@@ -34,9 +34,9 @@ public class MapLibrary {
 		//open file
 		try
 		{
-			stream = new FileInputStream(mapFile[0]);
+			stream = this.getClass().getResourceAsStream(mapFile[0]);
 		}
-		catch(FileNotFoundException e)
+		catch(NullPointerException e)
 		{
 			System.err.print(e.toString());
 			System.exit(1);
