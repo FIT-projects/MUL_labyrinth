@@ -6,15 +6,19 @@ import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MainMenu extends JPanel {
+	private static boolean run = true;
+	private GameStart gameLoop;
 
 	/**
 	 * Create the panel.
 	 */
-	public MainMenu() {
+	public MainMenu(GameStart startObject) {
+		this.gameLoop = startObject;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{444, 0};
 		gridBagLayout.rowHeights = new int[]{132, 30, 132, 0, 0};
@@ -23,12 +27,7 @@ public class MainMenu extends JPanel {
 		setLayout(gridBagLayout);
 		
 		JButton btnStartNewGame = new JButton("Start New Game");
-		btnStartNewGame.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-			}
-		});
+		btnStartNewGame.addActionListener(startObject);
 
 		GridBagConstraints gbc_btnStartNewGame = new GridBagConstraints();
 		gbc_btnStartNewGame.fill = GridBagConstraints.HORIZONTAL;
@@ -41,8 +40,12 @@ public class MainMenu extends JPanel {
 		btnQuitGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.exit(0);
 			}
 		});
+		
+		if(!run)
+			super.setEnabled(false);
 		
 		GridBagConstraints gbc_btnQuitGame = new GridBagConstraints();
 		gbc_btnQuitGame.insets = new Insets(5, 20, 5, 20);

@@ -15,15 +15,25 @@ import library.*;
 public class GamePanel extends JPanel{
 	private ImageLibrary iLib = null;
 	private MapLibrary mLib = null;
-	final private int resolution = 32;
-	final static private String imagesFile = "resources/terrain.png";
+	private final int resolution = Defaults.getImageResTile();
+	private final static String imagesFile = Defaults.getImageFile();
+	private int tilesNum; // number of tiles to render
 
 	GamePanel(){
 		super();
 		this.iLib = new ImageLibrary(imagesFile, resolution);
 		this.mLib = new MapLibrary(0);
+		tilesNum = Defaults.getAppResolutionX() * Defaults.getAppResolutionY();
+		tilesNum /= resolution * resolution;
 		
-		System.out.print(mLib.getTile(0));
+		System.out.print(tilesNum);
+	}
+	
+	/**
+	 * Renderer of the game screen
+	 */
+	public void render(){
+		
 	}
 	
 	/**
