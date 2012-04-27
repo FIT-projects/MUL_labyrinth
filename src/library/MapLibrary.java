@@ -14,20 +14,21 @@ import java.util.*;
 public class MapLibrary {
 	final private String[] mapFile = Defaults.getMapFile();
 	private List<Short> activeLevel = new ArrayList<Short>();
-	private int levelColumns = 0;
-	private int levelRows = 0;
+	private int levelWidth = 0;
+	private int levelHeight = 0;
 	private int screenColumns = 0;
 	private int screenRows = 0; 
-	private int toRender = 0; // number of tiles to render
+	private int toRender = 0; // number of tiles to render 
 	private int activeTile = 0; // active tile for iteration
 	private int startingTile = 0; // left up corner tile
 	private int endingTile = 0; // right botton corner tile
-	private int fig = Defaults.getImgIdByImgName("figure");
-	private InnerWindow window;
+	private int fig = Defaults.imgIdByImgName("figure");
+	private short outOfMap = (short)Defaults.imgIdByImgName("rock");
+	//private InnerWindow window;
 	
 	/**
 	 * Inner class witch set on rendering window
-	 */
+	 *//*
 	private class InnerWindow{
 		public int rowNum = 0;
 		public int colNum = 0;
@@ -39,14 +40,14 @@ public class MapLibrary {
 		
 		//TODO loading methods for move in rows and cols
 	}
-	
+	*/
 	public MapLibrary(){
 	}
 	
 	public MapLibrary(int level){
 		loadLevel(level);
 	}
-	
+	/*
 	private void defaultView(){
 		screenColumns = Defaults.getAppResolutionX() / Defaults.getImageResTile();
 		screenRows = Defaults.getAppResolutionY() / Defaults.getImageResTile();
@@ -75,7 +76,8 @@ public class MapLibrary {
 		
 		activeTile = startingTile;
 	}
-	
+	*/
+	/*
 	private void loadInner(){
 		window = new InnerWindow(levelRows, levelColumns);
 		
@@ -94,7 +96,7 @@ public class MapLibrary {
 		//TODO this will be changed
 		activeTile = startingTile;
 	}
-	
+	*/
 	/**
 	 * Load level file and set it as active
 	 * @param level Id of the level
@@ -114,15 +116,20 @@ public class MapLibrary {
 		
 		//read the file
 		try{
-			levelColumns = 0;
+			levelWidth = 0;
 			boolean firstRow = true; 
 			int data = stream.read();
+			Short get;
 			while(data != -1){
 				if(data != '\n' && data != ' '){
-					activeLevel.add(new Short((short)(data - '0')));
+					get = new Short((short)(data - '0'));
+					activeLevel.add(get);
 					//pocitani hodnot v prvnim radku
 					if(firstRow){
-						levelColumns++;
+						levelWidth++;
+					}
+					if(get == Defaults.mapNameToId("figure")){
+						startingTile = activeLevel.size()-1;
 					}
 				}
 				else if(data == '\n'){
@@ -137,15 +144,15 @@ public class MapLibrary {
 		}
 		
 		//has the map same number of columns in rows
-		if(activeLevel.size() % levelColumns != 0){
+		if(activeLevel.size() % levelWidth != 0){
 			System.err.print("File have bad format");
 			System.exit(1);
 		}
 		
-		levelRows = activeLevel.size() / levelColumns;
+		levelHeight = activeLevel.size() / levelWidth;
 		// remap tiles from map to image id
 		remap();
-		defaultView();
+		// defaultView();
 	}
 	
 	/**
@@ -162,8 +169,57 @@ public class MapLibrary {
 	
 	
 	/* Getters and setters */
+	//TODO comments
 	public short getTile(int index){
-		return(activeLevel.get(index));
+		try{
+			return(activeLevel.get(index));
+		}
+		catch (IndexOutOfBoundsException e) {
+			return outOfMap;
+		}
+	}
+	public short getTile(int X, int Y){
+		try{
+			return(activeLevel.get(Y*levelWidth+X));
+		}
+		catch (IndexOutOfBoundsException e) {
+			return(outOfMap);
+		}
+	}
+	public short[] getTileLine(int X,int Y, int num){
+		short[] ret = new short[num+1];
+
+		//bad row
+		if(Y < 0 || Y > levelHeight){
+			for(int i = 0; i < num; i++)
+				ret[i] = outOfMap;
+			
+			return ret;
+		}
+		
+		int a = 0;
+		// column out of range
+		if(X < 0){
+			for(a = 0;X < 0; X++,a++){
+				ret[a] = outOfMap;
+				if(a >= num)
+					return ret;
+			}
+		}
+		System.out.println(Y*levelWidth+X + " a:" + a+" num:"+num);
+		for(int i = Y*levelWidth+X, c = 0;a < num; i++, a++,c++){
+			if(c > levelWidth) //column out of range
+				ret[a] = outOfMap;
+			else{
+				try{
+					ret[a] = activeLevel.get(i);
+				}catch (IndexOutOfBoundsException e) {
+					ret[a] = outOfMap;
+				}
+			}
+		}
+		
+		return ret;
 	}
 
 	public int getToRender() {
@@ -172,5 +228,18 @@ public class MapLibrary {
 
 	public void setToRender(int toRender) {
 		this.toRender = toRender;
+	}
+	
+	/**
+	 * Get starting location of player in map
+	 * @return format [X,Y]
+	 */
+	public int[] getStartLocation(){
+		int[] ret = new int[2];
+		
+		ret[0] = startingTile / levelWidth;
+		ret[1] = startingTile - (levelWidth * ret[0]);
+
+		return ret;
 	}
 }

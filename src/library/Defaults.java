@@ -21,6 +21,7 @@ public class Defaults {
 	private static final String[] mapFile = {"resources/level0.map"};
 	private static final String imageFile = "resources/terrain.png";
 	private static final Map<String,Integer> imgNameToId;
+	private static final Map<String,Integer> mapNameToId;
 	private static final int imageResTile = 32;
 	private static final Map<Integer,Integer> tileRemap; // remap tiles from map to image tiles
 	
@@ -38,6 +39,13 @@ public class Defaults {
 		temp2.put("dirt", 2);
 		temp2.put("figure", 28);
 		imgNameToId = Collections.unmodifiableMap(temp2);
+		
+		//tile name to id
+		Map<String,Integer> temp3 = new HashMap<String,Integer>();
+		temp3.put("rock", 1);
+		temp3.put("dirt", 0);
+		temp3.put("figure", 5);
+		mapNameToId = Collections.unmodifiableMap(temp3);
 	}
 	
 	/* Getters and setters */
@@ -66,10 +74,11 @@ public class Defaults {
 		}
 		throw new ExceptionNameNotFound();
 	}
-	public static int getImgIdByImgName(String name){
+	public static int imgIdByImgName(String name){
 		return imgNameToId.get(name);
 	}
-	
-	
+	public static int mapNameToId(String name) {
+		return mapNameToId.get(name);
+	}
 	
 }
