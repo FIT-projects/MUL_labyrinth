@@ -16,9 +16,10 @@ public class GamePanel extends JPanel{
 	private ImageLibrary iLib = null;
 	private MapLibrary mLib = null;
 	private final int resolution = Defaults.getImageResTile();
-	private final static String imagesFile = Defaults.getImageFile();
+	private final String imagesFile = Defaults.getImageFile();
 	private int tilesNum; // number of tiles to render
 	private RenderWindow render;
+	private BufferedImage input;
 
 	GamePanel(){
 		super();
@@ -28,7 +29,7 @@ public class GamePanel extends JPanel{
 		tilesNum /= resolution;
 		
 		int[] start = mLib.getStartLocation();
-		render = new RenderWindow(mLib, tilesNum, tilesNum, start[0], start[1]);
+		render = new RenderWindow(mLib, iLib, tilesNum, tilesNum, start[0], start[1]);
 		
 		render.loadScreen(); // load default screen
 		System.out.print(tilesNum);
@@ -38,7 +39,9 @@ public class GamePanel extends JPanel{
 	 * Renderer of the game screen
 	 */
 	public void render(){
-		//TODO draw this window
+		input = (BufferedImage) render.getImageToRender();
+		
+		this.repaint();
 	}
 	
 	/**
@@ -49,10 +52,7 @@ public class GamePanel extends JPanel{
 		
 		Graphics2D g2 = (Graphics2D)g;
 		
-		BufferedImage img = (BufferedImage)iLib.getImageTile(0);
-		
-		g2.drawImage(iLib.getImageTile(0), 0, 0, this);
-		g2.drawImage(iLib.getImageTile(1), 32, 0, this);
+		g2.drawImage(input, 0, 0, this);
 		
 		
 	}

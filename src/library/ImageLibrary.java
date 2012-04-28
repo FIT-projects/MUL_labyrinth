@@ -2,7 +2,9 @@ package library;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -17,6 +19,7 @@ import javax.imageio.ImageIO;
  */
 public class ImageLibrary {
 	private List<BufferedImage> textures;
+	private int resolution;
 	
 	/**
 	 * Create object and load images
@@ -25,11 +28,12 @@ public class ImageLibrary {
 	 */
 	public ImageLibrary(String name, int resolution){
 		BufferedImage img = null;
+		this.resolution = resolution;
 		textures = new ArrayList<BufferedImage>();
 		
 		// load image from file
 		try {
-			img = ImageIO.read(this.getClass().getResource(name));//ImageIO.read(new File(name));
+			img = ImageIO.read(this.getClass().getResource(name));
 		} catch (Exception e) {
 			System.err.println("Error: Image file can't be loaded.");
 			e.printStackTrace();
@@ -52,7 +56,39 @@ public class ImageLibrary {
 		
 	}
 	
+	public WritableRaster createCompatibleRaster(int width, int height){
+		return (textures.get(0).getRaster().createCompatibleWritableRaster(width, height));
+	}
+	
+	/**
+	 * Return image at index from internal image
+	 * @param index index of tile in image 
+	 * @return Image object
+	 */
 	public Image getImageTile(int index){
 		return(textures.get(index));
+	}
+	
+	/**
+	 * Return raster at index from internal image
+	 * @param index index of tile in image
+	 * @return Raster object
+	 */
+	public Raster getRasterById(int index){
+		System.out.println("TransferType: "+textures.get(index).getData().getTransferType()+" SM: "+textures.get(index).getData().getSampleModel());
+		System.out.println("Image id: "+index);
+		return(textures.get(index).getData());
+	}
+	
+	public int[] getPixelsById(int index){
+		int[] ret = new int[resolution*resolution];
+		System.out.println(textures.get(0).getColorModel().hasAlpha());
+		PixelGrabber pg = new PixelGrabber(textures.get(index), 0, 0, resolution, resolution, ret, 0, resolution);
+		try{
+			pg.grabPixels();
+		} catch(InterruptedException e){
+			System.err.println(e.getMessage());
+		}
+		return ret;
 	}
 }

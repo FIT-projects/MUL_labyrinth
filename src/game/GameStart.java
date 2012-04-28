@@ -66,8 +66,8 @@ public class GameStart implements ActionListener{
 			System.out.println("set menu");
 		}
 		
-		frame.repaint();
-		game.repaint();
+		frame.revalidate();
+		game.revalidate();
 		
 		this.screen = screen;
 		
@@ -129,6 +129,7 @@ public class GameStart implements ActionListener{
 			if(screenChange)
 				checkScreenChange();
 	
+			//game.render();
 			
 			//System.out.println(this.screen.toString());
 		}
