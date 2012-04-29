@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import javax.swing.JFrame;
 
 import utilities.GameKeys;
+import utilities.KeyMappper;
 
 import entities.AbstractEntity;
 import entities.Player;
@@ -162,7 +163,7 @@ public class GameStart implements ActionListener{
 		
 		// main loop
 		while(true){
-			waitHere(50);
+			waitHere(10);
 			
 			processEvents();
 			gameLogic();
@@ -179,9 +180,11 @@ public class GameStart implements ActionListener{
 	 */
 	private void processEvents(){
 		GameKeys k;
-		while((k = game.getNextKeyPressed()) != GameKeys.NONE){ 
+		KeyMappper.processKeys();
+		keysPressed = KeyMappper.getPressed();
+		/*while((k = game.getNextKeyPressed()) != GameKeys.NONE){ 
 			keysPressed.add(k);
-		}
+		}*/
 	}
 	
 	/**

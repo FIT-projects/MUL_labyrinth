@@ -2,22 +2,13 @@ package game;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeSet;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import utilities.GameKeys;
+import utilities.KeyMappper;
 
 import entities.AbstractEntity;
 import entities.Player;
@@ -51,72 +42,29 @@ public class GamePanel extends JPanel{
 		int[] start = mLib.getStartLocation();
 		render = new RenderWindow(mLib, iLib, tilesNum, tilesNum, start[0], start[1]);
 		
-		//addKeyListener(this);
 		setFocusable(true);
-		Action a = new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("pressed " + arg0.getActionCommand() + " " + arg0.getWhen());
-				keyPressed(arg0.getActionCommand());
-			}
-		};
-		Action a2 = new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("released " + arg0.getActionCommand() + " " + arg0.getWhen());
-			}
-		};
-		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("W"), "try");
-		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "try");
-		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "try");
-		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("S"), "try");
-		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released D"), "try2");
-		this.getActionMap().put("try", a);
-		this.getActionMap().put("try2", a2);
+
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("W"), "pressedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "pressedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "pressedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("S"), "pressedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released W"), "releasedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released A"), "releasedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released D"), "releasedMove");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released S"), "releasedMove");
+		this.getActionMap().put("pressedMove", KeyMappper.getActionMovePressed());
+		this.getActionMap().put("releasedMove", KeyMappper.getActionMoveReleased());
 		
 		render.loadScreen(); // load default screen
 		System.out.print(tilesNum);
 	}
 	
-	//TODO bad key listener
-	private void keyPressed(String key){
-		
-		if(key.equals("w")){
-			keyPressed.add(GameKeys.W);
-		}
-		else if(key.equals("s")){
-			keyPressed.add(GameKeys.S);
-		}
-		else if(key.equals("a")){
-			keyPressed.add(GameKeys.A);
-		}
-		else if(key.equals("d")){
-			keyPressed.add(GameKeys.D);
-		}
-	}
-	
-	private void keyReleased(int keyCode) {
-		
-		if(keyCode == KeyEvent.VK_W){
-			keyReleased.add(GameKeys.W);
-		}
-		else if(keyCode == KeyEvent.VK_S){
-			keyReleased.add(GameKeys.S);
-		}
-		else if(keyCode == KeyEvent.VK_A){
-			keyReleased.add(GameKeys.A);
-		}
-		else if(keyCode == KeyEvent.VK_D){
-			keyReleased.add(GameKeys.D);
-		}
-	}
 	
 	/**
 	 * Renderer of the game screen
 	 */
 	public void render(){
+		render.renderEntities();
 		input = (BufferedImage) render.getImageToRender();
 		
 		this.repaint();

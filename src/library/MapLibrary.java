@@ -89,12 +89,18 @@ public class MapLibrary {
 
 	}
 		
-	
+	/**
+	 * Return row from active map
+	 * @param X axis from where
+	 * @param Y axis from where
+	 * @param num number of elements to get
+	 * @return row of map
+	 */
 	public short[] getTileLine(int X,int Y, int num){
 		short[] ret = new short[num+1];
 
-		try{
-			List<Short> row = activeLevel.get(Y); // out of map at Y
+		try{ // out of map at Y
+			List<Short> row = activeLevel.get(Y); 
 			
 			for(int i = X, a = 0; a < num; i++, a++){
 				try{
@@ -109,6 +115,34 @@ public class MapLibrary {
 		} catch (IndexOutOfBoundsException e) {
 			for(int i = 0; i < num; i++)
 				ret[0] = outOfMap;
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Return column from active map
+	 * Need X,Y of top point from where start read
+	 * 
+	 * @param X axis from where to read
+	 * @param Y axis from where to read
+	 * @param num number of elements to get
+	 * @return column of map
+	 */
+	public short[] getTileColumn(int X,int Y, int num){
+		short[] ret = new short[num+1];
+		
+		// out of map
+		if(X < 0){
+			for(int i = 0; i < num; i++){
+				ret[i] = outOfMap;
+			}
+			return ret;
+		}
+
+		// from where
+		for(int i = Y, a = 0; a < num;i--, a++){
+			ret[a] = (short) getTile(X, i);
 		}
 		
 		return ret;

@@ -3,16 +3,10 @@
  */
 package game;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.List;
 
 import entities.AbstractEntity;
 import entities.Player;
@@ -36,6 +30,9 @@ public class RenderWindow {
 	// minimum and maximum tile in the inner window (map coordinates)
 	private int[] minmaxX = new int[2];
 	private int[] minmaxY = new int[2];
+	// player location and pixel location
+	private int[] locP = {0,0};
+	private int[] pixP = {0,0};
 	// background image to render (without player or enemies)
 	private BufferedImage background;
 	// final image
@@ -48,8 +45,8 @@ public class RenderWindow {
 	private int[] outerRes = new int[2];
 	// optimization
 	private final int tileRes = Defaults.getImageResTile(); 
-	// open way index type
-	private final int freeW = Defaults.getMoveTileIndex();
+	
+
 	
 	/**
 	 * Get pixels from libraries and create abstraction for rendering in JPanel
@@ -96,7 +93,73 @@ public class RenderWindow {
 		for(int i = 0; i < tiles[0];i++){
 			imgMap[i] = mSource.getTileLine(minmaxX[0], minmaxY[0]+i,tiles[1]);
 		}
+
+		drawBackground();
+		printMap();
 		
+		renderEntities();
+
+	}
+	
+	/**
+	 * Move screen to other tile (no need for tile change)
+	 * @param x +/- change in x axis
+	 * @param y +/- change in y axis
+	 */
+	public void followPlayer(int x, int y){
+		short[][] newMap = new short[tiles[1]][tiles[0]];
+		// change X tile - we need load new column
+		if(x != 0){
+			minmaxX[0] += x;
+			minmaxX[1] += x;
+			
+			if(x < 0){ // move to left
+				for(int i = 0; i < tiles[1]; i++){
+					newMap[i][0] = (short) mSource.getTile(minmaxX[0], minmaxY[0]+i);
+					for(int a = 1; a < tiles[1]; a++){
+						newMap[i][a] = imgMap[i][a-1];
+					}
+				}
+			}
+			else{ // move to right
+				for(int i = 0; i < tiles[1]; i++){
+					for(int a = 0; a < (tiles[1]-1); a++){
+						newMap[i][a] = imgMap[i][a+1];
+					}
+					newMap[i][tiles[1]-1] = (short) mSource.getTile(minmaxX[1], minmaxY[0]+i);
+				}
+			}
+		}
+		// change Y tile - we need load new row
+		if(y != 0){
+			minmaxY[0] += y;
+			minmaxY[1] += y;
+			
+			if(y < 0){ // move up
+				newMap[0] = mSource.getTileLine(minmaxX[0], minmaxY[0], tiles[1]);
+				
+				for(int i = 1; i < tiles[1]; i++){
+					newMap[i]  = imgMap[i-1];
+				}
+			}
+			else{ // move down
+				for(int i = 0; i < (tiles[1]-1); i++){
+					newMap[i]  = imgMap[i+1];
+				}
+				
+				newMap[tiles[0]-1] = mSource.getTileLine(minmaxX[0], minmaxY[1], tiles[1]);
+			}
+		}
+		
+		imgMap = newMap;
+		//draw new background
+		drawBackground();
+	}
+	
+	/**
+	 * Draw background image
+	 */
+	private void drawBackground(){
 		Graphics2D g = background.createGraphics();
 		
 		int res = Defaults.getImageResTile();
@@ -109,36 +172,31 @@ public class RenderWindow {
 		}
 		
 		g.dispose();
-		printMap();
-		
-		renderEntities();
-
 	}
 	
 	/**
-	 * Final image to render
+	 * Get final image to render
 	 * @return image to render on JPanel
 	 */
 	public Image getImageToRender(){
 		//innerWindow.setData(raster);
-		return(finalImg.getSubimage(tileRes, tileRes, background.getWidth()-tileRes, background.getHeight()-tileRes));
+		return(finalImg.getSubimage(tileRes+pixP[0], tileRes+pixP[1], 
+				background.getWidth()-tileRes-pixP[0], background.getHeight()-tileRes-pixP[1]));
 	}
 	
 	/**
 	 * Render entities in window
 	 */
-	private void renderEntities(){
-		//TODO this won't function for more entities -> new erase image before
+	public void renderEntities(){
 		Graphics2D g2 = finalImg.createGraphics();
 		g2.drawImage(background, 0, 0, null);
-		System.out.println("Num ent: " + ent.size());
 		
 		for(AbstractEntity e : ent){
 			if(e instanceof Player){
-				int[] loc = e.getTileLocation();
-				int[] pix = e.getPixelLocation();
-				g2.drawImage(e.getAvatarImage(), ((loc[0] - minmaxX[0])*tileRes)+pix[0], 
-						((loc[1] - minmaxY[0])*tileRes)+pix[1], null);
+				locP = e.getTileLocation();
+				pixP = e.getPixelLocation();
+				g2.drawImage(e.getAvatarImage(), ((locP[0] - minmaxX[0])*tileRes)+pixP[0], 
+						((locP[1] - minmaxY[0])*tileRes)+pixP[1], null);
 			}
 			else
 			{
@@ -159,7 +217,6 @@ public class RenderWindow {
 	public void addEntity(AbstractEntity e){
 		if(!ent.contains(e))
 			ent.add(e);
-		renderEntities();
 	}
 	
 	/**
