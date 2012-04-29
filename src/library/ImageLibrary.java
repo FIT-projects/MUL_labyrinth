@@ -91,4 +91,12 @@ public class ImageLibrary {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Set white pixels as transparent 
+	 * @param r raster to modify
+	 */
+	private void setTransparent(Raster r){
+		
+	}
 }

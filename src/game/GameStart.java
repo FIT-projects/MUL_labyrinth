@@ -6,8 +6,18 @@ package game;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
 
 import javax.swing.JFrame;
+
+import utilities.GameKeys;
+
+import entities.AbstractEntity;
+import entities.Player;
 
 import library.Defaults;
 
@@ -23,6 +33,9 @@ public class GameStart implements ActionListener{
 	private MainMenu menu = new MainMenu(this);
 	private GamePanel game = new GamePanel();
 	private boolean screenChange = false;
+	private Player player; // player class
+	private ArrayList<AbstractEntity> ent = new ArrayList<AbstractEntity>(); // other entities in game (like enemies)
+	private TreeSet<GameKeys> keysPressed = new TreeSet<GameKeys>();
 
 	public enum GamePart {
 		MENU, GAME
@@ -49,7 +62,7 @@ public class GameStart implements ActionListener{
 
 	/**
 	 * Set JPanel on JFrame 
-	 * @param screen enumaration GamePart, choose witch game screen you want
+	 * @param screen enumeration GamePart, choose witch game screen you want
 	 */
 	public void setScreen(GamePart screen) {
 		this.screen = screen;
@@ -85,6 +98,20 @@ public class GameStart implements ActionListener{
 		frame.setSize(appResolutionX, appResolutionY);
 		frame.setResizable(false);
 		
+		//create game entities
+		ent.addAll(Arrays.asList(game.getEntities()));
+		
+		for(AbstractEntity e : ent){
+			if(e instanceof Player){
+				player = (Player)e;
+				if(!ent.remove(e)){
+					System.err.println("Active level doesn't have player start position");
+					System.exit(1);
+				}
+				break;
+			}
+		}
+		
 		//frame.add(menu);
 		setScreen(GamePart.MENU);
 		frame.setVisible(true);
@@ -116,6 +143,13 @@ public class GameStart implements ActionListener{
 		screenChange = false;
 	}
 	
+	public synchronized void waitHere(int ms){
+		try {
+			wait(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Main game loop
@@ -123,17 +157,51 @@ public class GameStart implements ActionListener{
 	public void gameLoop(){
 		init();
 		
+		if(screenChange)
+			checkScreenChange();
+		
 		// main loop
 		while(true){
+			waitHere(50);
 			
-			if(screenChange)
-				checkScreenChange();
-	
-			//game.render();
+			processEvents();
+			gameLogic();
+
+			game.render();
 			
 			//System.out.println(this.screen.toString());
 		}
 		
+	}
+	
+	/**
+	 * Process events like keys here
+	 */
+	private void processEvents(){
+		GameKeys k;
+		while((k = game.getNextKeyPressed()) != GameKeys.NONE){ 
+			keysPressed.add(k);
+		}
+	}
+	
+	/**
+	 * Moving with screen, moving with enemies etc...
+	 */
+	private void gameLogic(){
+		// reaction on movement keys
+		int keys = 0;
+		for(GameKeys k : keysPressed){
+			if(k == GameKeys.W)
+				keys += AbstractEntity.UP;
+			else if(k == GameKeys.S)
+				keys += AbstractEntity.DOWN;
+			else if(k == GameKeys.A)
+				keys += AbstractEntity.LEFT;
+			else if(k == GameKeys.D)
+				keys += AbstractEntity.RIGHT;
+		}
+		keysPressed.clear();
+		player.move(keys);
 	}
 	
 	/**
