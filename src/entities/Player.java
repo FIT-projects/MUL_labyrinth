@@ -85,8 +85,10 @@ public class Player extends AbstractEntity {
 		}
 		
 
-		if(moveTile)
+		if(moveTile){
+			System.out.println("Actual tile: " + map.getTile(locTile[0], locTile[1]) + " " + locTile[0] + " " + locTile[1]);
 			window.followPlayer(nextTile[0],nextTile[1]);
+		}
 	}
 	
 	@Override

@@ -10,5 +10,5 @@ package utilities;
  * Enumeration of keys for this application
  */
 public enum GameKeys {
-	W, S, A, D, NONE
+	W, S, A, D, ESC, NONE
 }

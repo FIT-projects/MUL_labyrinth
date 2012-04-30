@@ -68,7 +68,9 @@ public class RenderWindow {
 		minmaxY[0] = startY - tiles[1] / 2;
 		
 		minmaxX[1] = minmaxX[0] + tiles[0];
-		minmaxY[1] = minmaxY[1] + tiles[1];
+		minmaxY[1] = minmaxY[0] + tiles[1];
+		System.out.println("minX:" + minmaxX[0] + " maxX:" + minmaxX[1]);
+		System.out.println("minY:" + minmaxY[0] + " maxY:" + minmaxY[1]);
 		
 		outerRes[0] = numtilesX * tileRes;
 		outerRes[0] = numtilesY * tileRes;
@@ -88,7 +90,7 @@ public class RenderWindow {
 	 */
 	public void loadScreen(){
 		// load image types from map
-		System.out.println("X: " + tiles[0] + " Y: " + tiles[1]);
+		System.out.println("Tiles X: " + tiles[0] + " Y: " + tiles[1]);
 		
 		for(int i = 0; i < tiles[0];i++){
 			imgMap[i] = mSource.getTileLine(minmaxX[0], minmaxY[0]+i,tiles[1]);
@@ -107,9 +109,23 @@ public class RenderWindow {
 	 * @param y +/- change in y axis
 	 */
 	public void followPlayer(int x, int y){
+		System.out.println("move tile: " + x + " " + y);
 		short[][] newMap = new short[tiles[1]][tiles[0]];
+		
+		// move two directions at once
+		if(x != 0 && y != 0){
+			minmaxX[0] += x;
+			minmaxX[1] += x;
+			minmaxY[0] += y;
+			minmaxY[1] += y;
+			
+			for(int i = 0; i < tiles[0];i++){
+				newMap[i] = mSource.getTileLine(minmaxX[0], minmaxY[0]+i,tiles[1]);
+			}
+		}
+		
 		// change X tile - we need load new column
-		if(x != 0){
+		else if(x != 0){
 			minmaxX[0] += x;
 			minmaxX[1] += x;
 			
@@ -126,12 +142,13 @@ public class RenderWindow {
 					for(int a = 0; a < (tiles[1]-1); a++){
 						newMap[i][a] = imgMap[i][a+1];
 					}
-					newMap[i][tiles[1]-1] = (short) mSource.getTile(minmaxX[1], minmaxY[0]+i);
+					newMap[i][tiles[1]-1] = (short) mSource.getTile(minmaxX[1]-1, minmaxY[0]+i);
 				}
 			}
+			
 		}
 		// change Y tile - we need load new row
-		if(y != 0){
+		else if(y != 0){
 			minmaxY[0] += y;
 			minmaxY[1] += y;
 			
@@ -147,8 +164,10 @@ public class RenderWindow {
 					newMap[i]  = imgMap[i+1];
 				}
 				
-				newMap[tiles[0]-1] = mSource.getTileLine(minmaxX[0], minmaxY[1], tiles[1]);
+				newMap[tiles[0]-1] = mSource.getTileLine(minmaxX[0], minmaxY[1]-1, tiles[1]);
 			}
+			
+			
 		}
 		
 		imgMap = newMap;

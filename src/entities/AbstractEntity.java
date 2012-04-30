@@ -24,8 +24,8 @@ public abstract class AbstractEntity {
 	//relative pixel location from tile (upper left corner)
 	protected int[] locPix = {0,0};
 	protected int resTile = Defaults.getImageResTile();
-	protected int speed = 2;
-	private int blocker = Defaults.getImgBlockTile();
+	protected int speed = 3;
+	protected int blocker = Defaults.getImgBlockTile();
 	
 	// constants
 	// used to move with entity, sum this int's for requested direction
@@ -35,7 +35,7 @@ public abstract class AbstractEntity {
 	public static final int LEFT = 8;
 	
 	/**
-	 * Get Imige for render this enetity
+	 * Get Image for render this entity
 	 * @return Image for render
 	 */
 	public Image getAvatarImage(){

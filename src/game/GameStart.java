@@ -37,6 +37,7 @@ public class GameStart implements ActionListener{
 	private Player player; // player class
 	private ArrayList<AbstractEntity> ent = new ArrayList<AbstractEntity>(); // other entities in game (like enemies)
 	private TreeSet<GameKeys> keysPressed = new TreeSet<GameKeys>();
+	private TreeSet<GameKeys> keyReleased = new TreeSet<GameKeys>(); // the same as typed keys
 
 	public enum GamePart {
 		MENU, GAME
@@ -51,6 +52,13 @@ public class GameStart implements ActionListener{
 	
 	public void actionPerformed(ActionEvent e){
 		if(e.getActionCommand().contains("Start New Game")){
+			setScreen(GamePart.GAME);
+			ent.clear();
+			game.restartGame();
+			loadEntities();
+			checkScreenChange();
+		}
+		else if(e.getActionCommand().contains("Resume Game")){
 			setScreen(GamePart.GAME);
 			checkScreenChange();
 		}
@@ -73,15 +81,20 @@ public class GameStart implements ActionListener{
 		frame.remove(game);
 		if(screen == GamePart.GAME){
 			frame.add(game);
+			game.revalidate();
+			game.repaint();
 			System.out.println("set game");
 		}
 		else{
 			frame.add(menu);
+			menu.revalidate();
+			menu.repaint();
 			System.out.println("set menu");
 		}
 		
 		frame.revalidate();
-		game.revalidate();
+		//game.revalidate();
+		
 		
 		this.screen = screen;
 		
@@ -99,6 +112,17 @@ public class GameStart implements ActionListener{
 		frame.setSize(appResolutionX, appResolutionY);
 		frame.setResizable(false);
 		
+		loadEntities();
+		
+		//frame.add(menu);
+		setScreen(GamePart.MENU);
+		frame.setVisible(true);
+		System.out.println("Game started!");
+		
+	}
+	
+	
+	private void loadEntities(){
 		//create game entities
 		ent.addAll(Arrays.asList(game.getEntities()));
 		
@@ -112,12 +136,6 @@ public class GameStart implements ActionListener{
 				break;
 			}
 		}
-		
-		//frame.add(menu);
-		setScreen(GamePart.MENU);
-		frame.setVisible(true);
-		System.out.println("Game started!");
-		
 	}
 	
 	/**
@@ -167,6 +185,9 @@ public class GameStart implements ActionListener{
 			
 			processEvents();
 			gameLogic();
+			
+			if(screenChange)
+				checkScreenChange();
 
 			game.render();
 			
@@ -182,6 +203,7 @@ public class GameStart implements ActionListener{
 		GameKeys k;
 		KeyMappper.processKeys();
 		keysPressed = KeyMappper.getPressed();
+		keyReleased = KeyMappper.getReleased();
 		/*while((k = game.getNextKeyPressed()) != GameKeys.NONE){ 
 			keysPressed.add(k);
 		}*/
@@ -191,20 +213,30 @@ public class GameStart implements ActionListener{
 	 * Moving with screen, moving with enemies etc...
 	 */
 	private void gameLogic(){
-		// reaction on movement keys
-		int keys = 0;
+		
+		for(GameKeys k : keyReleased){
+			// reaction on game control keys
+			if(k == GameKeys.ESC){
+				menu.resumeGameVisibility(true);
+				setScreen(GamePart.MENU);
+				//System.exit(0);
+			}
+		}
+		
+		int move = 0;
 		for(GameKeys k : keysPressed){
+			// reaction on movement keys
 			if(k == GameKeys.W)
-				keys += AbstractEntity.UP;
+				move += AbstractEntity.UP;
 			else if(k == GameKeys.S)
-				keys += AbstractEntity.DOWN;
+				move += AbstractEntity.DOWN;
 			else if(k == GameKeys.A)
-				keys += AbstractEntity.LEFT;
+				move += AbstractEntity.LEFT;
 			else if(k == GameKeys.D)
-				keys += AbstractEntity.RIGHT;
+				move += AbstractEntity.RIGHT;
 		}
 		keysPressed.clear();
-		player.move(keys);
+		player.move(move);
 	}
 	
 	/**

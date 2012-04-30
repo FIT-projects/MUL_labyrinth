@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 public class MainMenu extends JPanel {
 	private static boolean run = true;
 	private GameStart gameLoop;
+	private JButton btnResumeGame;
 
 	/**
 	 * Create the panel.
@@ -47,6 +48,17 @@ public class MainMenu extends JPanel {
 		if(!run)
 			super.setEnabled(false);
 		
+		btnResumeGame = new JButton("Resume Game");
+		btnResumeGame.setVisible(false);
+		btnResumeGame.addActionListener(startObject);
+		
+		GridBagConstraints gbc_btnResumeGame = new GridBagConstraints();
+		gbc_btnResumeGame.insets = new Insets(0, 20, 0, 20);
+		gbc_btnResumeGame.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnResumeGame.gridx = 0;
+		gbc_btnResumeGame.gridy = 1;
+		add(btnResumeGame, gbc_btnResumeGame);
+		
 		GridBagConstraints gbc_btnQuitGame = new GridBagConstraints();
 		gbc_btnQuitGame.insets = new Insets(5, 20, 5, 20);
 		gbc_btnQuitGame.fill = GridBagConstraints.HORIZONTAL;
@@ -54,6 +66,11 @@ public class MainMenu extends JPanel {
 		gbc_btnQuitGame.gridy = 2;
 		add(btnQuitGame, gbc_btnQuitGame);
 
+	}
+	
+	
+	public void resumeGameVisibility(boolean flag){
+		btnResumeGame.setVisible(flag);
 	}
 
 }

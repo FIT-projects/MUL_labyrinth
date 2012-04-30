@@ -4,6 +4,7 @@
 package utilities;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.KeyStroke;
 
 import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
 
@@ -82,11 +84,43 @@ public class KeyMappper {
 		}
 	};
 	
+	// for control game -> end game, main menu, mute etc...
+	private static Action gameControlPressed = new AbstractAction() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getActionCommand().hashCode() == KeyEvent.VK_ESCAPE){
+				keyPressed.put(GameKeys.ESC, e.getWhen());
+				lastReleased.put(GameKeys.ESC, false);
+			}
+			
+		}
+	};
+	
+	private static Action gameControlReleased = new AbstractAction() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getActionCommand().hashCode() == KeyEvent.VK_ESCAPE){
+				keyReleased.put(GameKeys.ESC, e.getWhen());
+				lastReleased.put(GameKeys.ESC, true);
+			}
+			
+		}
+	};
+	
 	public static Action getActionMovePressed(){
 		return movePressed;
 	}
 	public static Action getActionMoveReleased(){
 		return moveReleased;
+	}
+	
+	public static Action getActionControlPressed(){
+		return gameControlPressed;
+	}
+	public static Action getActionControlReleased(){
+		return gameControlReleased;
 	}
 	
 	/**
@@ -131,5 +165,19 @@ public class KeyMappper {
 	 */
 	public static TreeSet<GameKeys> getReleased(){
 		return wasReleased;
+	}
+	
+	/**
+	 * Was key released
+	 * @param key is this key still pressed
+	 * @return true if it was released
+	 */
+	public static boolean wasReleased(GameKeys key){
+		for(GameKeys k : wasReleased){
+			if(k == key)
+				return true;
+		}
+		
+		return false;
 	}
 }

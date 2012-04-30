@@ -28,8 +28,6 @@ public class GamePanel extends JPanel{
 	private int tilesNum; // number of tiles to render
 	private RenderWindow render;
 	private BufferedImage input;
-	private TreeSet<GameKeys> keyPressed = new TreeSet<GameKeys>();
-	private TreeSet<GameKeys> keyReleased = new TreeSet<GameKeys>();
 	 
 
 	GamePanel(){
@@ -41,9 +39,11 @@ public class GamePanel extends JPanel{
 		
 		int[] start = mLib.getStartLocation();
 		render = new RenderWindow(mLib, iLib, tilesNum, tilesNum, start[0], start[1]);
+		render.loadScreen(); // load default screen
 		
 		setFocusable(true);
 
+		//game move
 		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("W"), "pressedMove");
 		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "pressedMove");
 		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "pressedMove");
@@ -55,7 +55,12 @@ public class GamePanel extends JPanel{
 		this.getActionMap().put("pressedMove", KeyMappper.getActionMovePressed());
 		this.getActionMap().put("releasedMove", KeyMappper.getActionMoveReleased());
 		
-		render.loadScreen(); // load default screen
+		//game control
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "pressedControl");
+		this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released ESCAPE"), "releasedControl");
+		this.getActionMap().put("pressedControl", KeyMappper.getActionControlPressed());
+		this.getActionMap().put("releasedControl", KeyMappper.getActionControlReleased());
+		
 		System.out.print(tilesNum);
 	}
 	
@@ -89,6 +94,10 @@ public class GamePanel extends JPanel{
 		return render;
 	}
 	
+	/**
+	 * Return all game entities
+	 * @return Abstract entity array object 
+	 */
 	public AbstractEntity[] getEntities(){
 		AbstractEntity[] ret = new AbstractEntity[mLib.getNumberEntLvl()];
 		
@@ -104,21 +113,13 @@ public class GamePanel extends JPanel{
 		return mLib.getNumberEntLvl();
 	}
 	
-	public GameKeys getNextKeyPressed(){
-		if(keyPressed.isEmpty())
-			return GameKeys.NONE;
-		GameKeys b = keyPressed.first();
-		keyPressed.remove(b);
-		return b;
-	}
 	
-	public GameKeys getNextKeyReleased(){
-		if(keyReleased.isEmpty())
-			return GameKeys.NONE;
-		
-		GameKeys b = keyReleased.first();
-		keyReleased.remove(b);
-		
-		return b;
+	/**
+	 * Restart game
+	 */
+	public void restartGame(){
+		int[] start = mLib.getStartLocation();
+		render = new RenderWindow(mLib, iLib, tilesNum, tilesNum, start[0], start[1]);
+		render.loadScreen();
 	}
 }
