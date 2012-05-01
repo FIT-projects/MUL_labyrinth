@@ -6,7 +6,6 @@ package library;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import utilities.*;
 import utilities.ExceptionNameNotFound;
 
 /**
@@ -29,17 +28,20 @@ public class Defaults {
 	private static final Map<String,Integer> mapNameToId;
 	private static final Map<Integer,Integer> tileRemap; // remap tiles from map to image tiles
 	
+	
 	static {
 		// only for better change
 		// mapID , imageID
 		int[] tmpRock = {1,0};
 		int[] tmpDirt = {0,2};
 		int[] tmpFigure = {9,28};
+		int[] tmpEnemy = {8,29};
 		// map id to image id
 		Map<Integer,Integer> temp = new HashMap<Integer,Integer>();
 		temp.put(tmpRock[0], tmpRock[1]);
 		temp.put(tmpDirt[0], tmpDirt[1]);
-		temp.put(tmpFigure[0], tmpFigure[1]); 
+		temp.put(tmpFigure[0], tmpFigure[1]);
+		temp.put(tmpEnemy[0], tmpEnemy[1]); 
 		tileRemap = Collections.unmodifiableMap(temp);
 		
 		//tile name to id at image
@@ -47,6 +49,7 @@ public class Defaults {
 		temp2.put("rock", tmpRock[1]);
 		temp2.put("dirt", tmpDirt[1]);
 		temp2.put("figure", tmpFigure[1]);
+		temp2.put("enemy", tmpEnemy[1]);
 		imgNameToId = Collections.unmodifiableMap(temp2);
 		
 		//tile name to id at map
@@ -54,6 +57,7 @@ public class Defaults {
 		temp3.put("rock", tmpRock[0]);
 		temp3.put("dirt", tmpDirt[0]);
 		temp3.put("figure", tmpFigure[0]);
+		temp3.put("enemy", tmpEnemy[0]);
 		mapNameToId = Collections.unmodifiableMap(temp3);
 	}
 	

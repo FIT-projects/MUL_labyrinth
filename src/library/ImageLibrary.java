@@ -2,11 +2,8 @@ package library;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -19,7 +16,6 @@ import javax.imageio.ImageIO;
  */
 public class ImageLibrary {
 	private List<BufferedImage> textures;
-	private int resolution;
 	
 	/**
 	 * Create object and load images
@@ -28,7 +24,6 @@ public class ImageLibrary {
 	 */
 	public ImageLibrary(String name, int resolution){
 		BufferedImage img = null;
-		this.resolution = resolution;
 		textures = new ArrayList<BufferedImage>();
 		
 		// load image from file
@@ -80,23 +75,5 @@ public class ImageLibrary {
 		return(textures.get(index).getData());
 	}
 	
-	public int[] getPixelsById(int index){
-		int[] ret = new int[resolution*resolution];
-		System.out.println(textures.get(0).getColorModel().hasAlpha());
-		PixelGrabber pg = new PixelGrabber(textures.get(index), 0, 0, resolution, resolution, ret, 0, resolution);
-		try{
-			pg.grabPixels();
-		} catch(InterruptedException e){
-			System.err.println(e.getMessage());
-		}
-		return ret;
-	}
 	
-	/**
-	 * Set white pixels as transparent 
-	 * @param r raster to modify
-	 */
-	private void setTransparent(Raster r){
-		
-	}
 }

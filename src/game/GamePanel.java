@@ -3,14 +3,13 @@ package game;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.TreeSet;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import utilities.GameKeys;
 import utilities.KeyMappper;
 
 import entities.AbstractEntity;
+import entities.EnemyEntity;
 import entities.Player;
 import library.*;
 
@@ -21,6 +20,11 @@ import library.*;
  * Draw game table
  */
 public class GamePanel extends JPanel{
+	/**
+	 * For serialization (warning removal)
+	 */
+	private static final long serialVersionUID = 5851298974168429267L;
+	
 	private ImageLibrary iLib = null;
 	private MapLibrary mLib = null;
 	private final int resolution = Defaults.getImageResTile();
@@ -100,11 +104,17 @@ public class GamePanel extends JPanel{
 	 */
 	public AbstractEntity[] getEntities(){
 		AbstractEntity[] ret = new AbstractEntity[mLib.getNumberEntLvl()];
+		MapLibrary.Entities[] mapEnt = mLib.getLevelEntities();
 		
 		int[] loc = new int[2];
 		loc = mLib.getStartLocation();
-		
 		ret[0] = new Player(loc[0],loc[1],mLib,iLib.getImageTile(Defaults.getImgPlayerId()),render);
+		
+		int counter = 1;
+		for(MapLibrary.Entities e : mapEnt){
+			ret[counter] = new EnemyEntity(e.locX, e.locY, mLib, iLib.getImageTile(e.imgID), render);
+			counter++;
+		}
 		
 		return ret;
 	}

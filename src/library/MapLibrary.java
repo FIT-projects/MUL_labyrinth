@@ -16,11 +16,23 @@ public class MapLibrary {
 	private List<List<Short>> activeLevel = new ArrayList<List<Short>>();
 	private int levelWidth = 0;
 	private int levelHeight = 0;
+	private ArrayList<Entities> ent = new ArrayList<Entities>(); // loaded entities in map
 	private int[] startingTile = new int[2]; // player start position
 	private int fig = Defaults.getMapNameToId("figure");
+	private int enemy = Defaults.getMapNameToId("enemy");
 	private short outOfMap = (short)Defaults.getImgIdByImgName("rock");
 	private short underPlayer = (short)Defaults.getImgUnderPlayer();
 	
+	public class Entities{
+		public int locX;
+		public int locY;
+		public int imgID;
+		public Entities(int x, int y, int imgID){
+			this.locX = x;
+			this.locY = y;
+			this.imgID = imgID;
+		}
+	}
 
 	public MapLibrary(){
 	}
@@ -60,6 +72,10 @@ public class MapLibrary {
 					if(get == fig){
 						startingTile[1] = activeLevel.size();
 						startingTile[0] = row.size();
+						row.add(underPlayer);
+					}
+					else if(get == enemy){
+						ent.add(new Entities(row.size(), activeLevel.size(), Defaults.getTileToImage(get)));
 						row.add(underPlayer);
 					}
 					else
@@ -183,6 +199,10 @@ public class MapLibrary {
 	 * @return number of entities
 	 */
 	public int getNumberEntLvl(){
-		return 1;
+		return ent.size() + 1; // plus 1 for player
+	}
+	
+	public Entities[] getLevelEntities(){
+		return ent.toArray(new Entities[0]);
 	}
 }

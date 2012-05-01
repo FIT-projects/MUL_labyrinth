@@ -9,6 +9,11 @@ package utilities;
 public class ExceptionNameNotFound extends Exception {
 
 
+	/**
+	 * For serialization (warning removed)
+	 */
+	private static final long serialVersionUID = 2736746523387671412L;
+
 	public ExceptionNameNotFound() {
 	}
 

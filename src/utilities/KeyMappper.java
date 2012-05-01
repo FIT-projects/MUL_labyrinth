@@ -5,16 +5,12 @@ package utilities;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.KeyStroke;
 
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
 
 /**
  * @author Jiri Konecny <xkonec28>
@@ -32,6 +28,11 @@ public class KeyMappper {
 	
 	// Abstract action key pressed for move action
 	private static Action movePressed = new AbstractAction(){
+
+		/**
+		 * For serialization (warning removal)
+		 */
+		private static final long serialVersionUID = -7092372863911694169L;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -58,6 +59,11 @@ public class KeyMappper {
 	// Abstract action key released for move action
 	private static Action moveReleased = new AbstractAction() {
 		
+		/**
+		 * For serialization (warning removal)
+		 */
+		private static final long serialVersionUID = 5639324084068547278L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
@@ -87,6 +93,11 @@ public class KeyMappper {
 	// for control game -> end game, main menu, mute etc...
 	private static Action gameControlPressed = new AbstractAction() {
 		
+		/**
+		 * For serialization (warning removal)
+		 */
+		private static final long serialVersionUID = -502277761389348263L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getActionCommand().hashCode() == KeyEvent.VK_ESCAPE){
@@ -99,6 +110,11 @@ public class KeyMappper {
 	
 	private static Action gameControlReleased = new AbstractAction() {
 		
+		/**
+		 * For serialization (warning removal)
+		 */
+		private static final long serialVersionUID = 7577706256236043935L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getActionCommand().hashCode() == KeyEvent.VK_ESCAPE){

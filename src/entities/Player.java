@@ -7,10 +7,8 @@ import game.RenderWindow;
 
 import java.awt.Image;
 
-import com.sun.xml.internal.bind.v2.util.CollisionCheckStack;
-
-import library.Defaults;
 import library.MapLibrary;
+import library.SoundLibrary;
 
 /**
  * @author Jiri Konecny <xkonec28>
@@ -20,13 +18,12 @@ import library.MapLibrary;
  */
 public class Player extends AbstractEntity {
 	private boolean moved = false;
+	private SoundLibrary snd = new SoundLibrary();
 	
 	public Player(int locX, int locY, MapLibrary map, Image avatar, RenderWindow window){
-		locTile[0] = locX;
-		locTile[1] = locY;
-		this.map = map;
-		this.avatar = avatar;
-		this.window = window;
+		super(locX, locY, map, avatar, window);
+		
+		name = "Player";
 		
 		window.addEntity(this);
 	}
@@ -42,6 +39,7 @@ public class Player extends AbstractEntity {
 		// move processing
 		int[] nextTile = {0,0};
 		boolean moveTile = false;
+		moved = true;
 		
 		// move up
 		if((direction & UP) == UP){
@@ -93,7 +91,10 @@ public class Player extends AbstractEntity {
 	
 	@Override
 	public void action(){
-		
+		if(moved){
+			snd.playMove(700);
+			moved = false;
+		}
 	}
 	
 }

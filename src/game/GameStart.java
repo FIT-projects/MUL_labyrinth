@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
@@ -39,6 +37,7 @@ public class GameStart implements ActionListener{
 	private TreeSet<GameKeys> keysPressed = new TreeSet<GameKeys>();
 	private TreeSet<GameKeys> keyReleased = new TreeSet<GameKeys>(); // the same as typed keys
 
+	// specify part of the game
 	public enum GamePart {
 		MENU, GAME
 	}
@@ -49,7 +48,7 @@ public class GameStart implements ActionListener{
 	public GameStart(){
 	}
 	
-	
+	@Override
 	public void actionPerformed(ActionEvent e){
 		if(e.getActionCommand().contains("Start New Game")){
 			setScreen(GamePart.GAME);
@@ -121,7 +120,9 @@ public class GameStart implements ActionListener{
 		
 	}
 	
-	
+	/**
+	 * Load all game level entities
+	 */
 	private void loadEntities(){
 		//create game entities
 		ent.addAll(Arrays.asList(game.getEntities()));
@@ -130,12 +131,22 @@ public class GameStart implements ActionListener{
 			if(e instanceof Player){
 				player = (Player)e;
 				if(!ent.remove(e)){
-					System.err.println("Active level doesn't have player start position");
+					System.err.println("Active level doesn't have player starting position");
 					System.exit(1);
 				}
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * Provide actions for loaded entities
+	 */
+	private void entitiesActions(){
+		for(AbstractEntity a : ent){
+			a.action();
+		}
+		player.action();
 	}
 	
 	/**
@@ -200,13 +211,10 @@ public class GameStart implements ActionListener{
 	 * Process events like keys here
 	 */
 	private void processEvents(){
-		GameKeys k;
 		KeyMappper.processKeys();
 		keysPressed = KeyMappper.getPressed();
 		keyReleased = KeyMappper.getReleased();
-		/*while((k = game.getNextKeyPressed()) != GameKeys.NONE){ 
-			keysPressed.add(k);
-		}*/
+
 	}
 	
 	/**
@@ -236,10 +244,14 @@ public class GameStart implements ActionListener{
 				move += AbstractEntity.RIGHT;
 		}
 		keysPressed.clear();
+		
+		/* Game actions */
 		player.move(move);
+		entitiesActions();
 	}
 	
 	/**
+	 * Entry point of program
 	 * @param args No use
 	 */
 	public static void main(String[] args) {

@@ -20,6 +20,7 @@ public abstract class AbstractEntity {
 	protected Image avatar;
 	protected RenderWindow window;
 	protected MapLibrary map;
+	protected String name;
 	protected int[] locTile = new int[2];
 	//relative pixel location from tile (upper left corner)
 	protected int[] locPix = {0,0};
@@ -33,6 +34,15 @@ public abstract class AbstractEntity {
 	public static final int DOWN = 2;
 	public static final int RIGHT = 4;
 	public static final int LEFT = 8;
+	
+	
+	public AbstractEntity(int locX, int locY, MapLibrary map, Image avatar, RenderWindow window){
+		locTile[0] = locX;
+		locTile[1] = locY;
+		this.map = map;
+		this.avatar = avatar;
+		this.window = window;
+	}
 	
 	/**
 	 * Get Image for render this entity
