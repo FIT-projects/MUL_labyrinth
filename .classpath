@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/dragon/Prace/JIRKA/1.Vyska/Ing/1MIT/2.semestr/MUL/project/MUL_labyrinth/forms-1.3.0.jar" sourcepath="forms-1.3.0-src.zip"/>
+	<classpathentry kind="lib" path="/home/dragon/Downloads/JMF-2.1.1e/lib/customizer.jar"/>
+	<classpathentry kind="lib" path="/home/dragon/Downloads/JMF-2.1.1e/lib/jmf.jar"/>
+	<classpathentry kind="lib" path="/home/dragon/Downloads/JMF-2.1.1e/lib/mediaplayer.jar"/>
+	<classpathentry kind="lib" path="/home/dragon/Downloads/JMF-2.1.1e/lib/multiplayer.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
