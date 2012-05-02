@@ -1,0 +1,11 @@
+#ignoring folders
+###########
+/bin
+
+#files extensions
+###########
+*.swp
+
+#exact files
+###########
+.classpath
