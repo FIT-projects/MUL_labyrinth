@@ -4,13 +4,18 @@
 
 package game;
 
+import java.awt.Container;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
+import javax.swing.text.AbstractDocument.Content;
 
 import utilities.GameKeys;
 import utilities.KeyMappper;
@@ -31,6 +36,8 @@ public class GameStart implements ActionListener{
 	public GamePart screen;
 	private MainMenu menu = new MainMenu(this);
 	private GamePanel game = new GamePanel();
+	private MediaPlayer vidPlay;
+	private boolean wantPlay = false;
 	private boolean screenChange = false;
 	private Player player; // player class
 	private ArrayList<AbstractEntity> ent = new ArrayList<AbstractEntity>(); // other entities in game (like enemies)
@@ -39,7 +46,7 @@ public class GameStart implements ActionListener{
 
 	// specify part of the game
 	public enum GamePart {
-		MENU, GAME
+		MENU, GAME, INTRO
 	}
 	
 	/**
@@ -51,7 +58,8 @@ public class GameStart implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if(e.getActionCommand().contains("Start New Game")){
-			setScreen(GamePart.GAME);
+			setScreen(GamePart.INTRO);
+			//setScreen(GamePart.GAME);
 			ent.clear();
 			game.restartGame();
 			loadEntities();
@@ -84,16 +92,18 @@ public class GameStart implements ActionListener{
 			game.repaint();
 			System.out.println("set game");
 		}
-		else{
+		else if(screen == GamePart.MENU){
 			frame.add(menu);
 			menu.revalidate();
 			menu.repaint();
 			System.out.println("set menu");
 		}
+		else if(screen == GamePart.INTRO){
+			wantPlay = true;
+		}
 		
 		frame.revalidate();
 		//game.revalidate();
-		
 		
 		this.screen = screen;
 		
@@ -109,7 +119,9 @@ public class GameStart implements ActionListener{
 		this.frame = new JFrame("Labyrinth game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(appResolutionX, appResolutionY);
+		frame.setLocation(150, 150);
 		frame.setResizable(false);
+		vidPlay = new MediaPlayer();
 		
 		loadEntities();
 		
@@ -163,22 +175,57 @@ public class GameStart implements ActionListener{
 				System.exit(1);
 			}
 		}
-		else if(this.screen == GamePart.GAME){ // wake up
-			
-			if(this.screen == GamePart.GAME){
-				super.notify();
-			}
+		else if(this.screen == GamePart.GAME || this.screen == GamePart.INTRO){ // wake up
+			super.notify();
 		}
 		
 		screenChange = false;
 	}
 	
-	public synchronized void waitHere(int ms){
+	/**
+	 * Wait for some time
+	 * @param ms Time to wait in milliseconds
+	 */
+	public synchronized void waitHere(long ms){
 		try {
-			wait(50);
+			wait(ms);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Play game Intro
+	 */
+	private void playVideo(){	
+		frame.revalidate();
+		Container pane = frame.getContentPane();
+		frame.setContentPane(vidPlay.getMedia());
+		frame.setSize(appResolutionX, appResolutionY);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.setVisible(true);
+		
+		vidPlay.play(); // play video (block program when playing this)
+		
+		//wait for some time for initialization of video
+		waitHere(5000);
+		
+		// is really not playing now
+		while(vidPlay.isPlaying()){
+			waitHere(50);
+			if(!frame.isVisible())
+				vidPlay.stop();
+		}
+		
+		Point loc = frame.getLocation();
+		frame.setContentPane(pane);
+		frame.setLocation(loc);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		setScreen(GamePart.GAME);
+		wantPlay = false;
 	}
 	
 	/**
@@ -187,8 +234,11 @@ public class GameStart implements ActionListener{
 	public void gameLoop(){
 		init();
 		
-		if(screenChange)
+		if(screenChange){
 			checkScreenChange();
+			if(wantPlay)
+				playVideo();
+		}
 		
 		// main loop
 		while(true){
@@ -197,12 +247,14 @@ public class GameStart implements ActionListener{
 			processEvents();
 			gameLogic();
 			
-			if(screenChange)
+			if(screenChange){
 				checkScreenChange();
-
+				if(wantPlay)
+					playVideo();
+			}
+			
 			game.render();
 			
-			//System.out.println(this.screen.toString());
 		}
 		
 	}
@@ -255,7 +307,6 @@ public class GameStart implements ActionListener{
 	 * @param args No use
 	 */
 	public static void main(String[] args) {
-		
 		GameStart game = new GameStart();
 		
 		game.gameLoop();

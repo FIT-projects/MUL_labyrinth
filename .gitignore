@@ -5,6 +5,7 @@
 #files extensions
 ###########
 *.swp
+.fuse_hidden*
 
 #exact files
 ###########
