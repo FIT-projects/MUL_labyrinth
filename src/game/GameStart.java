@@ -43,6 +43,7 @@ public class GameStart implements ActionListener{
 	private ArrayList<AbstractEntity> ent = new ArrayList<AbstractEntity>(); // other entities in game (like enemies)
 	private TreeSet<GameKeys> keysPressed = new TreeSet<GameKeys>();
 	private TreeSet<GameKeys> keyReleased = new TreeSet<GameKeys>(); // the same as typed keys
+	private boolean introPlayed = false;
 
 	// specify part of the game
 	public enum GamePart {
@@ -58,8 +59,13 @@ public class GameStart implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if(e.getActionCommand().contains("Start New Level")){
-			setScreen(GamePart.INTRO);
-			//setScreen(GamePart.GAME);
+			if (!introPlayed)
+			{
+				setScreen(GamePart.INTRO);
+				introPlayed = true;
+			}
+			else
+				setScreen(GamePart.GAME);
 			ent.clear();
 			game.restartGame(menu.selectedLevel());
 			loadEntities();
@@ -239,6 +245,7 @@ public class GameStart implements ActionListener{
 	
 	/**
 	 * Main game loop
+	 * Inspired by Minicraft (https://s3.amazonaws.com/ld48/ld22/index.html)
 	 */
 	public void gameLoop(){
 		init();
@@ -303,21 +310,7 @@ public class GameStart implements ActionListener{
 				frames = 0;
 				ticks = 0;
 			}
-			/*	
-			waitHere(10);
-			
-			processEvents();
-			gameLogic();
-			
-			if(screenChange){
-				checkScreenChange();
-				if(wantPlay)
-					playVideo();
-			}
-			
-			game.render();*/			
 		}
-		
 	}
 	
 	/**
@@ -367,11 +360,20 @@ public class GameStart implements ActionListener{
 			if (!ent.isEmpty())
 				ent.clear();
 			
-			if (player.getEndTime() != 0 && System.currentTimeMillis() - player.getEndTime() > 2000)
+			if (player.exited() && player.getEndTime() != 0 && System.currentTimeMillis() - player.getEndTime() > Defaults.getSwitchLevelInterval())
 			{
+				// next level
+				//setScreen(GamePart.GAME);
+				menu.selectNextLevel();
+				game.restartGame(menu.selectedLevel());
+				loadEntities();
+			}
+			else if (player.getHealth() <= 0 && player.getDeathTime() != 0 && System.currentTimeMillis() - player.getDeathTime() > Defaults.getGameOverToMenuInterval())
+			{
+				// return to menu
+				player.resetTimes();				
 				menu.resumeGameVisibility(true);
-				setScreen(GamePart.MENU);
-				player.resetEndTime();
+				setScreen(GamePart.MENU);	
 			}
 		}
 	}

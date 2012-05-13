@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.AbstractEntity;
+import entities.GemEntity;
 import entities.Player;
 
 import library.Defaults;
@@ -109,7 +110,7 @@ public class RenderWindow {
 	 * @param y +/- change in y axis
 	 */
 	public void followPlayer(int x, int y){
-		System.out.println("move tile: " + x + " " + y);
+		//System.out.println("move tile: " + x + " " + y);
 		short[][] newMap = new short[tiles[1]][tiles[0]];
 		
 		// move two directions at once
@@ -210,14 +211,31 @@ public class RenderWindow {
 		Graphics2D g2 = finalImg.createGraphics();
 		g2.drawImage(background, 0, 0, null);
 		
+		// first render player
 		for(AbstractEntity e : ent){
 			if(e instanceof Player){
 				locP = e.getTileLocation();
 				pixP = e.getPixelLocation();
 				g2.drawImage(e.getAvatarImage(), ((locP[0] - minmaxX[0])*tileRes)+pixP[0], 
 						((locP[1] - minmaxY[0])*tileRes)+pixP[1], null);
+				break;
 			}
-			else
+		}
+		
+		// then render gems
+		for(AbstractEntity e : ent){
+			if (e instanceof GemEntity)
+			{
+				int[] loc = e.getTileLocation();
+				int[] pix = e.getPixelLocation();
+				g2.drawImage(e.getAvatarImage(), ((loc[0] - minmaxX[0])*tileRes)+pix[0], 
+						((loc[1] - minmaxY[0])*tileRes)+pix[1], null);				
+			}
+		}
+		
+		// finally render others
+		for(AbstractEntity e : ent){
+			if (!(e instanceof GemEntity) && !(e instanceof Player))
 			{
 				int[] loc = e.getTileLocation();
 				int[] pix = e.getPixelLocation();

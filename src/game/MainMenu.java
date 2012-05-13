@@ -46,6 +46,7 @@ public class MainMenu extends JPanel {
 		cboxLevel = new JComboBox<String>();
 		cboxLevel.addItem("1");
 		cboxLevel.addItem("2");
+		cboxLevel.addItem("3");
 
 		GridBagConstraints gbc_cboxLevel = new GridBagConstraints();
 		gbc_btnStartNewGame.fill = GridBagConstraints.HORIZONTAL;
@@ -90,6 +91,9 @@ public class MainMenu extends JPanel {
 		return cboxLevel.getSelectedIndex();
 	}
 	
+	public void selectNextLevel() {
+		cboxLevel.setSelectedIndex((cboxLevel.getSelectedIndex() + 1) % cboxLevel.getItemCount());		
+	}	
 	
 	public void resumeGameVisibility(boolean flag){
 		btnResumeGame.setVisible(flag);
