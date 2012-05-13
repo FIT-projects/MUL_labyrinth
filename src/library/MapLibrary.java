@@ -20,8 +20,11 @@ public class MapLibrary {
 	private int[] startingTile = new int[2]; // player start position
 	private int fig = Defaults.getMapNameToId("figure");
 	private int enemy = Defaults.getMapNameToId("enemy");
+	private int gem = Defaults.getMapNameToId("gem");
 	private short outOfMap = (short)Defaults.getImgIdByImgName("rock");
 	private short underPlayer = (short)Defaults.getImgUnderPlayer();
+	private int gemCount = 0;
+	private int activeLevelId = 0;
 	
 	public class Entities{
 		public int locX;
@@ -47,11 +50,13 @@ public class MapLibrary {
 	 * @param level Id of the level
 	 */
 	public void loadLevel(int level){
+		activeLevelId = level;
 		InputStream stream = null;
+		gemCount = 0;
 		//open file
 		try
 		{
-			stream = this.getClass().getResourceAsStream(mapFile[0]);
+			stream = this.getClass().getResourceAsStream(mapFile[level]);
 		}
 		catch(NullPointerException e)
 		{
@@ -65,8 +70,9 @@ public class MapLibrary {
 			activeLevel.add(new ArrayList<Short>());
 			List<Short> row = new ArrayList<Short>();
 			Short get;
+			//int sep = Integer.parseInt(System.getProperty("line.separator"));
 			while(data != -1){
-				if(data != '\n' && data != ' '){
+				if(data != '\n' && data != '\r' && data != ' '){
 					get = new Short((short)(data - '0'));
 
 					if(get == fig){
@@ -77,6 +83,11 @@ public class MapLibrary {
 					else if(get == enemy){
 						ent.add(new Entities(row.size(), activeLevel.size(), Defaults.getTileToImage(get)));
 						row.add(underPlayer);
+					}
+					else if (get == gem) {
+						ent.add(new Entities(row.size(), activeLevel.size(), Defaults.getTileToImage(get)));
+						row.add(underPlayer);
+						gemCount++;
 					}
 					else
 						row.add((short) Defaults.getTileToImage(get));
@@ -204,5 +215,13 @@ public class MapLibrary {
 	
 	public Entities[] getLevelEntities(){
 		return ent.toArray(new Entities[0]);
+	}
+	
+	public int getGemCount() {
+		return gemCount;
+	}
+	
+	public int getActiveLevelId() {
+		return activeLevelId;
 	}
 }

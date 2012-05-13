@@ -28,20 +28,29 @@ public class Defaults {
 	private static final Map<String,Integer> mapNameToId;
 	private static final Map<Integer,Integer> tileRemap; // remap tiles from map to image tiles
 	
+	private static final int maxHealth = 5;
+	private static final int playerHurtIntervalMs = 1500;
+	private static final boolean renderAlways = true;
+	
 	
 	static {
 		// only for better change
 		// mapID , imageID
 		int[] tmpRock = {1,0};
-		int[] tmpDirt = {0,2};
-		int[] tmpFigure = {9,28};
-		int[] tmpEnemy = {8,29};
+		int[] tmpDirt = {0,1};
+		int[] tmpFigure = {9,17};
+		int[] tmpEnemy = {8,18};
+		int[] tmpGem = {7,2};
+		int[] tmpExit = {6,16};
+		
 		// map id to image id
 		Map<Integer,Integer> temp = new HashMap<Integer,Integer>();
 		temp.put(tmpRock[0], tmpRock[1]);
 		temp.put(tmpDirt[0], tmpDirt[1]);
 		temp.put(tmpFigure[0], tmpFigure[1]);
 		temp.put(tmpEnemy[0], tmpEnemy[1]); 
+		temp.put(tmpGem[0], tmpGem[1]);
+		temp.put(tmpExit[0], tmpExit[1]);
 		tileRemap = Collections.unmodifiableMap(temp);
 		
 		//tile name to id at image
@@ -50,6 +59,8 @@ public class Defaults {
 		temp2.put("dirt", tmpDirt[1]);
 		temp2.put("figure", tmpFigure[1]);
 		temp2.put("enemy", tmpEnemy[1]);
+		temp2.put("gem", tmpGem[1]);
+		temp2.put("exit", tmpExit[1]);
 		imgNameToId = Collections.unmodifiableMap(temp2);
 		
 		//tile name to id at map
@@ -58,6 +69,8 @@ public class Defaults {
 		temp3.put("dirt", tmpDirt[0]);
 		temp3.put("figure", tmpFigure[0]);
 		temp3.put("enemy", tmpEnemy[0]);
+		temp3.put("gem", tmpGem[0]);
+		temp3.put("exit", tmpExit[0]);
 		mapNameToId = Collections.unmodifiableMap(temp3);
 	}
 	
@@ -110,5 +123,17 @@ public class Defaults {
 	
 	public static int getImgPlayerId(){
 		return imgNameToId.get(player);
+	}
+	
+	public static int getMaxHealth() {
+		return maxHealth;
+	}
+	
+	public static int getHurtInterval() {
+		return playerHurtIntervalMs;
+	}
+	
+	public static boolean getRenderAlways() {
+		return renderAlways;
 	}
 }

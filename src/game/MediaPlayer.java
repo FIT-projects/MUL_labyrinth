@@ -8,7 +8,8 @@ import com.sun.jna.NativeLibrary;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 
@@ -19,9 +20,13 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
  * Play video file
  */
 public class MediaPlayer {
+	private static String path = "media/";
+	private static String musicFile = "music.mp3";
+	private static String videoFile = "intro.wmv";	
 
 	// vlcj media player
 	private EmbeddedMediaPlayerComponent mediaPlayerComponent = null;
+	private HeadlessMediaPlayer musicPlayer;
 	
 	public MediaPlayer(){
 		
@@ -31,7 +36,7 @@ public class MediaPlayer {
 				);
 		// dunno if this is functional
 		NativeLibrary.addSearchPath(
-				RuntimeUtil.getLibVlcLibraryName(), "c:/Program Files/VideoLAN/VLC"
+				RuntimeUtil.getLibVlcLibraryName(), "C:/Program Files/VideoLAN/VLC"
 				);
 
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
@@ -39,11 +44,15 @@ public class MediaPlayer {
 		
 		//create media player
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-	
+		// music player
+		musicPlayer = (new MediaPlayerFactory()).newHeadlessMediaPlayer();
+		musicPlayer.setRepeat(true);
+		musicPlayer.setVolume(70);
 	}
 	
 	public void finalize(){
 		mediaPlayerComponent.getMediaPlayer().release();
+		musicPlayer.release();
 	}
 	
 	
@@ -60,12 +69,21 @@ public class MediaPlayer {
 	 * @throws InterruptedException  Interrupted from sleep (block system when play)
 	 */
 	public void play(){
-		mediaPlayerComponent.getMediaPlayer().playMedia("vid/CF_Axel_F_400x300.avi");
+		musicPlayer.stop();
+		mediaPlayerComponent.getMediaPlayer().playMedia(path + videoFile);
 		
 	}
 	
 	public void stop(){
 		mediaPlayerComponent.getMediaPlayer().stop();
+	}
+	
+	public void playMusic(){	    
+	    musicPlayer.playMedia(path + musicFile);	    
+	}
+	
+	public void stopMusic(){
+		musicPlayer.stop();
 	}
 	
 	/**

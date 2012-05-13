@@ -28,6 +28,8 @@ public abstract class AbstractEntity {
 	protected int speed = 3;
 	protected int blocker = Defaults.getImgBlockTile();
 	
+	//protected boolean dispose
+	
 	// constants
 	// used to move with entity, sum this int's for requested direction
 	public static final int UP = 1;

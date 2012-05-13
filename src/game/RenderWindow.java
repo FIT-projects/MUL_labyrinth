@@ -274,4 +274,9 @@ public class RenderWindow {
 	public int[] getMinMaxY(){
 		return minmaxY;
 	}
+	
+	public ArrayList<AbstractEntity> getEntities()
+	{
+		return ent;		
+	}
 }

@@ -9,21 +9,21 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.text.AbstractDocument.Content;
+import javax.swing.KeyStroke;
 
 import utilities.GameKeys;
 import utilities.KeyMappper;
-
 import entities.AbstractEntity;
 import entities.Player;
-
 import library.Defaults;
+
 
 /**
  * @author Jiri Konecny <xkonec28>
@@ -57,15 +57,15 @@ public class GameStart implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e){
-		if(e.getActionCommand().contains("Start New Game")){
+		if(e.getActionCommand().contains("Start New Level")){
 			setScreen(GamePart.INTRO);
 			//setScreen(GamePart.GAME);
 			ent.clear();
-			game.restartGame();
+			game.restartGame(menu.selectedLevel());
 			loadEntities();
 			checkScreenChange();
 		}
-		else if(e.getActionCommand().contains("Resume Game")){
+		else if(e.getActionCommand().contains("Resume Level")){
 			setScreen(GamePart.GAME);
 			checkScreenChange();
 		}
@@ -205,18 +205,25 @@ public class GameStart implements ActionListener{
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setVisible(true);
+		frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "fecharAction");
+		frame.getRootPane().getActionMap().put("fecharAction", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent e) { vidPlay.stop(); }
+		});		
 		
 		vidPlay.play(); // play video (block program when playing this)
 		
 		//wait for some time for initialization of video
-		waitHere(5000);
-		
+		waitHere(500);		
+
 		// is really not playing now
 		while(vidPlay.isPlaying()){
 			waitHere(50);
+
 			if(!frame.isVisible())
 				vidPlay.stop();
 		}
+		
 		
 		Point loc = frame.getLocation();
 		frame.setContentPane(pane);
@@ -226,6 +233,8 @@ public class GameStart implements ActionListener{
 		
 		setScreen(GamePart.GAME);
 		wantPlay = false;
+		
+		vidPlay.playMusic();
 	}
 	
 	/**
@@ -238,10 +247,63 @@ public class GameStart implements ActionListener{
 			checkScreenChange();
 			if(wantPlay)
 				playVideo();
-		}
+		}		
+		
+		long lastTime = System.nanoTime();
+		double unprocessed = 0;
+		double nsPerTick = 1000000000.0 / 60;
+		int frames = 0;
+		int ticks = 0;
+		long lastTimer1 = System.currentTimeMillis();
 		
 		// main loop
 		while(true){
+			long now = System.nanoTime();
+			unprocessed += (now - lastTime) / nsPerTick;
+			lastTime = now;
+			boolean shouldRender = Defaults.getRenderAlways();
+			while (unprocessed >= 1) {
+				ticks++;
+				
+				processEvents();
+				gameLogic();
+				
+				if(screenChange){
+					checkScreenChange();
+					if(wantPlay) {
+						playVideo();						
+					}
+					lastTime = System.nanoTime();
+					unprocessed = 0;
+					nsPerTick = 1000000000.0 / 60;
+					frames = 0;
+					ticks = 0;
+					lastTimer1 = System.currentTimeMillis();
+					break;
+				}
+			
+				unprocessed -= 1;
+				shouldRender = true;
+			}
+
+			try {
+				Thread.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			if (shouldRender) {
+				frames++;
+				game.render();
+			}
+
+			if (System.currentTimeMillis() - lastTimer1 > 1000) {
+				lastTimer1 += 1000;				
+				game.setShowInfo(ticks, frames);
+				frames = 0;
+				ticks = 0;
+			}
+			/*	
 			waitHere(10);
 			
 			processEvents();
@@ -253,8 +315,7 @@ public class GameStart implements ActionListener{
 					playVideo();
 			}
 			
-			game.render();
-			
+			game.render();*/			
 		}
 		
 	}
@@ -300,6 +361,19 @@ public class GameStart implements ActionListener{
 		/* Game actions */
 		player.move(move);
 		entitiesActions();
+		
+		if (player.exited() || player.getHealth() <= 0)
+		{
+			if (!ent.isEmpty())
+				ent.clear();
+			
+			if (player.getEndTime() != 0 && System.currentTimeMillis() - player.getEndTime() > 2000)
+			{
+				menu.resumeGameVisibility(true);
+				setScreen(GamePart.MENU);
+				player.resetEndTime();
+			}
+		}
 	}
 	
 	/**

@@ -1,5 +1,8 @@
 package game;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -10,6 +13,7 @@ import utilities.KeyMappper;
 
 import entities.AbstractEntity;
 import entities.EnemyEntity;
+import entities.GemEntity;
 import entities.Player;
 import library.*;
 
@@ -32,6 +36,8 @@ public class GamePanel extends JPanel{
 	private int tilesNum; // number of tiles to render
 	private RenderWindow render;
 	private BufferedImage input;
+	private Player refPlayer;
+	private int ticksToShow = 0, fpsToShow = 0;
 	 
 
 	GamePanel(){
@@ -88,6 +94,33 @@ public class GamePanel extends JPanel{
 		Graphics2D g2 = (Graphics2D)g;
 		
 		g2.drawImage(input, 0, 0, this);
+		
+		g2.setColor(Color.white);
+		g2.drawString("GEMS: "+refPlayer.getCollectedGemCount()+"/"+mLib.getGemCount(), 0, 30);
+		g2.drawString("HEALTH: "+refPlayer.getHealth()+"/"+Defaults.getMaxHealth(), 0, 15);	
+		
+	
+		
+		g2.drawString("Ticks: "+ticksToShow, Defaults.getAppResolutionX() - 60, 15);
+		g2.drawString("FPS: "+fpsToShow, Defaults.getAppResolutionX() - 60, 30);
+		
+		if (refPlayer.getHealth() <= 0 || refPlayer.exited())
+		{
+			Font f = new Font(g2.getFont().getName(), g2.getFont().getStyle(), g2.getFont().getSize()+20);
+	        g2.setFont(f);
+	        FontMetrics fmH = getFontMetrics(g2.getFont());
+	        
+	        String str;
+	        if (refPlayer.getHealth() <= 0)
+	        	str = "Game over!";
+	        else
+	        	str = "Level "+(mLib.getActiveLevelId()+1)+" completed!";
+	        	
+	        int w = fmH.stringWidth(str);
+	        			
+	        g2.drawString(str, Defaults.getAppResolutionX() / 2  - w/2, Defaults.getAppResolutionY()/2 - 20);
+		}
+
 	}
 	
 	/**
@@ -108,11 +141,15 @@ public class GamePanel extends JPanel{
 		
 		int[] loc = new int[2];
 		loc = mLib.getStartLocation();
-		ret[0] = new Player(loc[0],loc[1],mLib,iLib.getImageTile(Defaults.getImgPlayerId()),render);
-		
+		refPlayer = new Player(loc[0],loc[1],mLib,iLib.getImageTile(Defaults.getImgPlayerId()),render, mLib.getGemCount());
+		ret[0] = refPlayer;
+				
 		int counter = 1;
 		for(MapLibrary.Entities e : mapEnt){
-			ret[counter] = new EnemyEntity(e.locX, e.locY, mLib, iLib.getImageTile(e.imgID), render);
+			if (e.imgID == Defaults.getImgIdByImgName("enemy"))
+				ret[counter] = new EnemyEntity(e.locX, e.locY, mLib, iLib.getImageTile(e.imgID), render);
+			else if (e.imgID == Defaults.getImgIdByImgName("gem"))
+				ret[counter] = new GemEntity(e.locX, e.locY, mLib, iLib.getImageTile(e.imgID), render);
 			counter++;
 		}
 		
@@ -127,9 +164,17 @@ public class GamePanel extends JPanel{
 	/**
 	 * Restart game
 	 */
-	public void restartGame(){
+	public void restartGame(int level){
+		
+		this.mLib = new MapLibrary(level);
 		int[] start = mLib.getStartLocation();
 		render = new RenderWindow(mLib, iLib, tilesNum, tilesNum, start[0], start[1]);
 		render.loadScreen();
+	}
+	
+	public void setShowInfo(int ticks, int frames)
+	{
+		ticksToShow = ticks;
+		fpsToShow = frames;		
 	}
 }

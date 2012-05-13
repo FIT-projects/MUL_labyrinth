@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import java.awt.event.MouseAdapter;
@@ -17,6 +18,7 @@ public class MainMenu extends JPanel {
 	private static final long serialVersionUID = -4119838071156563905L;
 	
 	private static boolean run = true;
+	private JComboBox<String> cboxLevel;
 	private JButton btnResumeGame;
 
 	/**
@@ -30,15 +32,28 @@ public class MainMenu extends JPanel {
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JButton btnStartNewGame = new JButton("Start New Game");
+		JButton btnStartNewGame = new JButton("Start New Level");
 		btnStartNewGame.addActionListener(startObject);
-
+		
 		GridBagConstraints gbc_btnStartNewGame = new GridBagConstraints();
 		gbc_btnStartNewGame.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnStartNewGame.insets = new Insets(5, 20, 5, 20);
 		gbc_btnStartNewGame.gridx = 0;
 		gbc_btnStartNewGame.gridy = 0;
 		add(btnStartNewGame, gbc_btnStartNewGame);
+		
+		// level
+		cboxLevel = new JComboBox<String>();
+		cboxLevel.addItem("1");
+		cboxLevel.addItem("2");
+
+		GridBagConstraints gbc_cboxLevel = new GridBagConstraints();
+		gbc_btnStartNewGame.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnStartNewGame.insets = new Insets(5, 20, 5, 20);
+		gbc_btnStartNewGame.gridx = 0;
+		gbc_btnStartNewGame.gridy = 0;
+		add(cboxLevel, gbc_cboxLevel);
+
 		
 		JButton btnQuitGame = new JButton("Quit Game");
 		btnQuitGame.addMouseListener(new MouseAdapter() {
@@ -51,7 +66,7 @@ public class MainMenu extends JPanel {
 		if(!run)
 			super.setEnabled(false);
 		
-		btnResumeGame = new JButton("Resume Game");
+		btnResumeGame = new JButton("Resume Level");
 		btnResumeGame.setVisible(false);
 		btnResumeGame.addActionListener(startObject);
 		
@@ -69,6 +84,10 @@ public class MainMenu extends JPanel {
 		gbc_btnQuitGame.gridy = 2;
 		add(btnQuitGame, gbc_btnQuitGame);
 
+	}
+	
+	public int selectedLevel() {
+		return cboxLevel.getSelectedIndex();
 	}
 	
 	
