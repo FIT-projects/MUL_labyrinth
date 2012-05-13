@@ -17,7 +17,7 @@ import utilities.ExceptionNameNotFound;
 public class Defaults {
 	private static final int appResolutionX = 544;
 	private static final int appResolutionY = 544;
-	private static final String[] mapFile = {"resources/level0.map","resources/level1.map"};
+	private static final String[] mapFile = {"resources/level0.map","resources/level1.map", "resources/level2.map"};
 	private static final String imageFile = "resources/terrain.png";
 	private static final int imageResTile = 32;
 	private static final String freeTile = "dirt";
@@ -31,6 +31,8 @@ public class Defaults {
 	private static final int maxHealth = 5;
 	private static final int playerHurtIntervalMs = 1500;
 	private static final boolean renderAlways = true;
+	private static final int switchLevelIntervalMs = 2000;
+	private static final int gameOverToMenuIntervalMs = 3000;
 	
 	
 	static {
@@ -135,5 +137,13 @@ public class Defaults {
 	
 	public static boolean getRenderAlways() {
 		return renderAlways;
+	}
+	
+	public static int getSwitchLevelInterval() {
+		return switchLevelIntervalMs;
+	}
+	
+	public static int getGameOverToMenuInterval() {
+		return gameOverToMenuIntervalMs;
 	}
 }

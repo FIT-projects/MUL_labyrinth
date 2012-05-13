@@ -95,15 +95,24 @@ public class GamePanel extends JPanel{
 		
 		g2.drawImage(input, 0, 0, this);
 		
-		g2.setColor(Color.white);
+		if (refPlayer.getCollectedGemCount() == mLib.getGemCount())
+			g2.setColor(Color.green);
+		else
+			g2.setColor(Color.white);
 		g2.drawString("GEMS: "+refPlayer.getCollectedGemCount()+"/"+mLib.getGemCount(), 0, 30);
+		
+		if (refPlayer.getHealth() <= 1)
+			g2.setColor(Color.red);
+		else
+			g2.setColor(Color.white);
+			
 		g2.drawString("HEALTH: "+refPlayer.getHealth()+"/"+Defaults.getMaxHealth(), 0, 15);	
 		
-	
-		
+		g2.setColor(Color.lightGray);
 		g2.drawString("Ticks: "+ticksToShow, Defaults.getAppResolutionX() - 60, 15);
 		g2.drawString("FPS: "+fpsToShow, Defaults.getAppResolutionX() - 60, 30);
 		
+		g2.setColor(Color.white);
 		if (refPlayer.getHealth() <= 0 || refPlayer.exited())
 		{
 			Font f = new Font(g2.getFont().getName(), g2.getFont().getStyle(), g2.getFont().getSize()+20);

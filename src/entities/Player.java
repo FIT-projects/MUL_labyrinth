@@ -24,6 +24,7 @@ public class Player extends AbstractEntity {
 	private int gemCount;
 	private long lastHurtMs = 0;
 	private long endTimeMs = 0;
+	private long deathTimeMs = 0;
 	
 	public Player(int locX, int locY, MapLibrary map, Image avatar, RenderWindow window, int gemCount){
 		super(locX, locY, map, avatar, window);
@@ -91,11 +92,10 @@ public class Player extends AbstractEntity {
 				locTile[0]--;
 				nextTile[0]--;
 			}
-		}
-		
+		}		
 
-		if(moveTile){
-			System.out.println("Actual tile: " + map.getTile(locTile[0], locTile[1]) + " " + locTile[0] + " " + locTile[1]);
+		if (moveTile){
+			//System.out.println("Actual tile: " + map.getTile(locTile[0], locTile[1]) + " " + locTile[0] + " " + locTile[1]);
 			window.followPlayer(nextTile[0],nextTile[1]);
 			
 			if (map.getTile(locTile[0], locTile[1]) == 16)
@@ -107,8 +107,7 @@ public class Player extends AbstractEntity {
 					SoundLibrary.play(SoundLibrary.SoundNames.EXIT, 0);
 				}
 				else
-					SoundLibrary.play(SoundLibrary.SoundNames.LOCKED, 0);
-					
+					SoundLibrary.play(SoundLibrary.SoundNames.LOCKED, 0);					
 			}
 			
 			AbstractEntity todel = null;
@@ -120,9 +119,7 @@ public class Player extends AbstractEntity {
 					{
 						SoundLibrary.play(SoundLibrary.SoundNames.GEM, 0);
 						todel = a;					
-						System.out.println("gem");
-						collectedGemCount++;
-						
+						collectedGemCount++;						
 					}
 				}
 			}		
@@ -156,7 +153,10 @@ public class Player extends AbstractEntity {
 		{
 			health--;
 			if (health == 0)
+			{
 				SoundLibrary.play(SoundLibrary.SoundNames.DEATH, 300);
+				deathTimeMs = System.currentTimeMillis();
+			}
 			else
 				SoundLibrary.play(SoundLibrary.SoundNames.LIVELOST, 300);
 			
@@ -168,8 +168,13 @@ public class Player extends AbstractEntity {
 		return endTimeMs;
 	}
 	
-	public void resetEndTime() {
+	public long getDeathTime() {
+		return deathTimeMs;
+	}
+	
+	public void resetTimes() {
 		endTimeMs = 0;
+		deathTimeMs = 0;
 	}
 	
 	
