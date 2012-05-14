@@ -245,7 +245,7 @@ public class GameStart implements ActionListener{
 	
 	/**
 	 * Main game loop
-	 * Inspired by Minicraft (https://s3.amazonaws.com/ld48/ld22/index.html)
+	 * Inspired by Minicraft (http://www.ludumdare.com/compo/ludum-dare-22/?action=preview&uid=398)
 	 */
 	public void gameLoop(){
 		init();

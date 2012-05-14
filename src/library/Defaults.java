@@ -18,7 +18,7 @@ public class Defaults {
 	private static final int appResolutionX = 544;
 	private static final int appResolutionY = 544;
 	private static final String[] mapFile = {"resources/level0.map","resources/level1.map", "resources/level2.map"};
-	private static final String imageFile = "resources/terrain.png";
+	private static final String imageFile = "resources/sprites.png";
 	private static final int imageResTile = 32;
 	private static final String freeTile = "dirt";
 	private static final String blockTile = "rock";

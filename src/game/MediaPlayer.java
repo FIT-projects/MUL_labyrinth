@@ -34,9 +34,13 @@ public class MediaPlayer {
 		NativeLibrary.addSearchPath(
 				RuntimeUtil.getLibVlcLibraryName(), "/usr/lib"
 				);
-		// dunno if this is functional
+
 		NativeLibrary.addSearchPath(
 				RuntimeUtil.getLibVlcLibraryName(), "C:/Program Files/VideoLAN/VLC"
+				);
+		
+		NativeLibrary.addSearchPath(
+				RuntimeUtil.getLibVlcLibraryName(), "C:/Program Files (x86)/VideoLAN/VLC"
 				);
 
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
